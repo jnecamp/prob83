@@ -5,9 +5,9 @@ bottom write.
 
 ## Instructions
 
-    1. Clone git repository onto local machine
-    2. 'cd' into 'prob83' directory
-    3. Find the minimal path sum of matrix in text file with command
+1. Clone git repository onto local machine
+2. 'cd' into 'prob83' directory
+3. Find the minimal path sum of matrix in text file with command using UCS (empirically verified as faster):
 
     '''
     python min_cost_path.py path_to_matrix_file
@@ -16,9 +16,13 @@ bottom write.
     or
 
     Test the code against simple test matrices with the command:
+    '''
+    python min_cost_path.py --test
+    '''
+    
+## Performance of UCS vs. A*
 
-
-A*
+###A*
 
 404650 function calls in 0.278 seconds
 
@@ -55,7 +59,7 @@ Ordered by: standard name
     37919    0.011    0.000    0.011    0.000 {method 'release' of 'thread.lock' objects}
         1    0.000    0.000    0.000    0.000 {thread.allocate_lock}
 
-UCS
+### UCS
 
 354086 function calls in 0.246 seconds
 
