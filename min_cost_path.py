@@ -1,3 +1,4 @@
+import cProfile
 import Queue
 import sys
 
@@ -24,6 +25,7 @@ def load_matrix_from_file(filename):
 def manhattan_distance(p1, p2):
     return abs(p1[0] - p2[0]) + abs(p1[1] - p2[1])
 
+# Consistent heuristic that maintains correctness of A*
 def get_min_possible_cost(p1, p2, heur_val):
     return manhattan_distance(p1, p2) * heur_val
 
@@ -39,7 +41,7 @@ def get_neighbor_points(point, max_row, max_col):
     if right[1] <= max_col: neighbors.append(right)
     return neighbors
 
-def find_min_cost_path(matrix, heur_val):
+def A_star(matrix, heur_val):
     max_row = len(matrix) - 1
     max_col = len(matrix[0]) - 1
     start_point = (0,0)
@@ -54,17 +56,40 @@ def find_min_cost_path(matrix, heur_val):
             return cur_cost
         if cur_point in explored:
             continue
+        explored.add(cur_point)
         for neighbor in get_neighbor_points(cur_point, max_row, max_col):
             if neighbor in explored:
                 continue
             this_cost = matrix[neighbor[0]][neighbor[1]]
             to_explore.put((this_cost + cur_cost + get_min_possible_cost(neighbor, end_point, heur_val), this_cost + cur_cost, neighbor))
-        else:
-            explored.add(cur_point)
+    raise Exception("A minimum path should be found")
+
+def uniform_cost_search(matrix, min_value):
+    max_row = len(matrix) - 1
+    max_col = len(matrix[0]) - 1
+    start_point = (0,0)
+    end_point = (max_row, max_col)
+    explored = set()
+    to_explore = Queue.PriorityQueue()
+    this_cost = matrix[start_point[0]][start_point[1]]
+    to_explore.put((this_cost, start_point))
+    while not to_explore.empty():
+        cur_cost,  cur_point = to_explore.get()
+        if cur_point == end_point:
+            return cur_cost
+        if cur_point in explored:
+            continue
+        explored.add(cur_point)
+        for neighbor in get_neighbor_points(cur_point, max_row, max_col):
+            if neighbor in explored:
+                continue
+            this_cost = matrix[neighbor[0]][neighbor[1]]
+            to_explore.put((this_cost + cur_cost, neighbor))
     raise Exception("A minimum path should be found")
 
 if __name__ == "__main__":
     arg = sys.argv[1]
+    find_min_cost_path = uniform_cost_search
     if arg == "--test":
         for test_file, gold_ans in TEST_FILES_AND_ANS:
             matrix, min_val = load_matrix_from_file(test_file)
@@ -73,5 +98,5 @@ if __name__ == "__main__":
     else:
         matrix_filename = sys.argv[1]
         matrix, min_val = load_matrix_from_file(matrix_filename)
-        print find_min_cost_path(matrix, min_val)
+        cProfile.run('print find_min_cost_path(matrix, min_val)')
 
